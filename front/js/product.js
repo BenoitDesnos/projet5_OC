@@ -33,20 +33,10 @@ function makeId() {
   return fullId;
 }
 
-// récupère la valeur de l'input de la couleur de l'article
-const colorsWatchFn = () => {
-  colorWatch = colors.value;
-};
-
-// récupère la valeur de l'input du nombre d'articles
-const articlesCount = () => {
-  count = quantity.value;
-};
-
 // ajoute au localstorage un id, nombre d'articles et la couleur
 function addToStorage() {
-  articlesCount();
-  colorsWatchFn();
+  count = quantity.value;
+  colorWatch = colors.value;
 
   // récupère toutes les clés du localstorage
   let key = "";
