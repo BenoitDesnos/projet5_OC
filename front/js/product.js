@@ -9,10 +9,11 @@ let addedToCart = [];
 let count = 0;
 let colorWatch = "";
 let randomIds = [];
+let id = [];
 
 // crée un random id et le stock dans l'array randomIds, rejoue la fonction si id existe dans randomIds
 function makeId() {
-  let length = 20;
+  /* let length = 20;
   let result = "";
   let characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,7 +26,11 @@ function makeId() {
   }
   randomIds.push(result);
   console.log(randomIds);
-  return result;
+  return result; */
+  id = [];
+  id.push(title.textContent, colorWatch);
+  let fullId = id.join(" ");
+  return fullId;
 }
 
 // récupère la valeur de l'input de la couleur de l'article
@@ -33,38 +38,50 @@ const colorsCount = () => {
   colorWatch = colors.value;
 };
 
-/* colors.addEventListener("input", colorsCount); */
-
 // récupère la valeur de l'input du nombre d'articles
 const articlesCount = () => {
   count = quantity.value;
 };
 
-/* quantity.addEventListener("input", articlesCount); */
-
 // ajoute au localstorage un id, nombre d'articles et la couleur
 function addToStorage() {
   articlesCount();
-  /*  console.log(count + " count");
-  console.log(addedToCart[1] + " cartCount"); */
   colorsCount();
-  /*   console.log(colorWatch + " colorsWatch");
-  console.log(addedToCart[2] + " colorCart"); */
 
-  //verifie si meme couleur et nombre d'article differents, si oui change juste le nombre d'articles et modifie le nombre d'articles dans le dernier id dans le localstorage
-  if (addedToCart[2] === colorWatch && count !== addedToCart[1]) {
-    addedToCart[1] = count;
-    console.log(localStorage.key(0));
-    let stringifiedTocart = JSON.stringify(addedToCart);
-    localStorage.setItem(randomIds[randomIds.length - 1], stringifiedTocart);
-    // verifie si couleur et nmbres d'articles pareil, si oui message le précisant
-  } else if (addedToCart[2] === colorWatch && count === addedToCart[1]) {
+  // récupère toutes les clés du localstorage
+  let key = "";
+  const keyWatch = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      key = localStorage.key(i);
+      return key;
+    }
+  };
+  keyWatch();
+
+  //verifie si une clé contient la couleur meme couleur, si oui change nombre d'article
+
+  if (colorWatch === "") {
+    alert("Merci de choisir une couleur !");
+  } else if (count == 0) {
+    alert("Merci de choisir une quantité !");
+  }
+
+  // verifie si une clé contient la couleur meme couleur, si oui prévient artcile déjà dans panier
+  else if (key.includes(colorWatch) && count === addedToCart[1]) {
     alert("Objet déjà présent dans le panier");
-    // si aucun des cas du dessus alors crée id et sotck dans le local storage
-  } else {
+  }
+  // verifie si meme couleur et quantité differente, si oui change quantité dans la bonne key du localStorage
+  else if (key.includes(colorWatch) && count !== addedToCart[1]) {
+    addedToCart[1] = count;
+    let stringifiedTocart = JSON.stringify(addedToCart);
+    localStorage.setItem(key, stringifiedTocart);
+  }
+  // si aucun des cas du dessus alors crée id et sotck dans le local storage
+  else {
     addedToCart = [checkIdUrl(), count, colorWatch];
     let stringifiedTocart = JSON.stringify(addedToCart);
     localStorage.setItem(makeId(), stringifiedTocart);
+    alert("Objet ajouté avec succès !");
   }
 }
 addToCart.addEventListener("click", addToStorage);
