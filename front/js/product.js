@@ -11,7 +11,7 @@ let colorWatch = "";
 let randomIds = [];
 let id = [];
 
-// crée un random id et le stock dans l'array randomIds, rejoue la fonction si id existe dans randomIds
+// crée un id à partir du titre de l'objet et de sa couleur
 function makeId() {
   /* let length = 20;
   let result = "";
@@ -29,7 +29,7 @@ function makeId() {
   return result; */
   id = [];
   id.push(title.textContent, colorWatch);
-  let fullId = id.join(" ");
+  fullId = id.join(" ");
   return fullId;
 }
 
@@ -37,16 +37,27 @@ function makeId() {
 function addToStorage() {
   count = quantity.value;
   colorWatch = colors.value;
-
-  // récupère toutes les clés du localstorage
-  let key = "";
+  // récupère toutes les clés du localstorage et les stocks dans keys
+  let keys = [];
   const keyWatch = () => {
     for (let i = 0; i < localStorage.length; i++) {
-      key = localStorage.key(i);
-      return key;
+      keys.push(localStorage.key(i));
     }
+    return keys;
   };
   keyWatch();
+
+  // récupère les valeurs des differents keys dans la local storage et les stocks dans values
+  let values = [];
+  const ValueWatch = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      values.push(JSON.parse(localStorage[localStorage.key(i)]));
+      console.log(JSON.parse(localStorage[localStorage.key(i)]));
+    }
+    console.log(values);
+    return values;
+  };
+  ValueWatch();
 
   //verifie si une clé contient la couleur meme couleur, si oui change nombre d'article
 
@@ -55,18 +66,31 @@ function addToStorage() {
   } else if (count == 0) {
     alert("Merci de choisir une quantité !");
   }
-
-  // verifie si une clé contient la couleur meme couleur, si oui prévient artcile déjà dans panier
-  else if (key.includes(colorWatch) && count === addedToCart[1]) {
-    alert("Objet déjà présent dans le panier");
+  //verifie si le nouvel id existe deja dans le localstorage(keys)
+  else if (keys.includes(makeId())) {
+    for (let i = 0; i < localStorage.length; i++) {
+      //verifie si objet déja présent dans le panier
+      if (
+        checkIdUrl() === values[i][0] &&
+        count === values[i][1] &&
+        colorWatch === values[i][2]
+      ) {
+        return alert("Objet déjà présent dans le panier");
+      }
+      //verifie si objet déja présent dans et si sa quantité est differente. modifie la quantité
+      else if (
+        checkIdUrl() === values[i][0] &&
+        count !== values[i][1] &&
+        colorWatch === values[i][2]
+      ) {
+        addedToCart = [checkIdUrl(), count, colorWatch];
+        let stringifiedTocart = JSON.stringify(addedToCart);
+        localStorage.setItem(makeId(), stringifiedTocart);
+        return alert("Quantité modifiée avec succès");
+      }
+    }
   }
-  // verifie si meme couleur et quantité differente, si oui change quantité dans la bonne key du localStorage
-  else if (key.includes(colorWatch) && count !== addedToCart[1]) {
-    addedToCart[1] = count;
-    let stringifiedTocart = JSON.stringify(addedToCart);
-    localStorage.setItem(key, stringifiedTocart);
-  }
-  // si aucun des cas du dessus alors crée id et sotck dans le local storage
+  // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
   else {
     addedToCart = [checkIdUrl(), count, colorWatch];
     let stringifiedTocart = JSON.stringify(addedToCart);
@@ -97,7 +121,7 @@ const retrieveProductsData = () =>
 
 // les deux fonctions suivantes remplissent le html à l'aide de la fonction mainProduct en dessous qui récupère la data en asynchrone
 const fillItemImg = (product) => {
-  itemImg.innerHTML = `<img src="${product.imageUrl}" alt="Photographie d'un canapé"></img>`;
+  itemImg.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}"></img>`;
 };
 const fillItemContent = (product) => {
   title.textContent = product.name;

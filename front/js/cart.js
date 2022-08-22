@@ -28,7 +28,7 @@ const fillCart = async (products) => {
           i
         )}" data-color="${idStoredParsed[2]}">
     <div class="cart__item__img">
-    <img src="${product.imageUrl}" alt="Photographie d'un canapé">
+    <img src="${product.imageUrl}" alt="${product.altTxt}">
     </div>
     <div class="cart__item__content">
     <div class="cart__item__content__description">

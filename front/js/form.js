@@ -1,4 +1,4 @@
-/* let surname, nom, adress, city, email;
+let surname, nom, adress, city, email;
 
 const textChecker = (value) => {
   if (value.length > 0 && (value.length < 2 || value.length > 20)) {
@@ -27,4 +27,3 @@ class Contact {
     this.email = email;
   }
 }
- */
