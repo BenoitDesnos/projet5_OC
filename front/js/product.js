@@ -75,7 +75,7 @@ function addToStorage() {
         count === values[i][1] &&
         colorWatch === values[i][2]
       ) {
-        return alert("Objet déjà présent dans le panier");
+        return alert("Objet déjà présent dans le panier !");
       }
       //verifie si objet déja présent dans et si sa quantité est differente. modifie la quantité
       else if (
@@ -86,7 +86,7 @@ function addToStorage() {
         addedToCart = [checkIdUrl(), count, colorWatch];
         let stringifiedTocart = JSON.stringify(addedToCart);
         localStorage.setItem(makeId(), stringifiedTocart);
-        return alert("Quantité modifiée avec succès");
+        return alert("Quantité modifiée avec succès !");
       }
     }
   }

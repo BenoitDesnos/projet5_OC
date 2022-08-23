@@ -126,7 +126,7 @@ const changeNumberitem = () => {
         cartItem[i].getAttribute("data-id"),
         newArrayStringified
       );
-
+      productsWatch();
       changeOnInput();
     });
   }
@@ -137,6 +137,18 @@ const changeOnInput = async () => {
   sumPrice(productsData);
   sumQuantity(productsData);
 };
+
+let products = [];
+
+const productsIdWatch = () => {
+  products = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    products.push(JSON.parse(localStorage[localStorage.key(i)])[0]);
+  }
+  console.log(products);
+  return products;
+};
+productsIdWatch();
 
 // attends les données de l'api pour les fournir à fillCart & sumprice
 const mainCart = async () => {
