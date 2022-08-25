@@ -55,7 +55,8 @@ exports.orderProducts = (req, res, next) => {
     !req.body.contact.lastName ||
     !req.body.contact.address ||
     !req.body.contact.city ||
-    !req.body.contact.email
+    !req.body.contact.email ||
+    !req.body.products
   ) {
     return res.status(400).send(new Error("Bad request!"));
   }

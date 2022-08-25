@@ -1,3 +1,5 @@
+/* <---------------------------------------------- constantes  --------------------------------------------------------------------> */
+
 const cartItems = document.getElementById("cart__items");
 const cartItem = document.getElementsByClassName("cart__item");
 const totalQuantity = document.getElementById("totalQuantity");
@@ -5,6 +7,9 @@ const itemQuantity = document.getElementsByClassName("itemQuantity");
 const totalPrice = document.getElementById("totalPrice");
 const deleteItem = document.getElementsByClassName("deleteItem");
 
+/* <---------------------------------------------- fonctions --------------------------------------------------------------------> */
+
+// recupère les données présentent sur l'api
 const retrieveProductsData = () =>
   fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
@@ -15,6 +20,7 @@ const retrieveProductsData = () =>
         err
       )
     );
+
 // remplis le panier en comparant les ids dans l'api et le local storage
 const fillCart = async (products) => {
   products.forEach((product) => {
@@ -126,7 +132,7 @@ const changeNumberitem = () => {
         cartItem[i].getAttribute("data-id"),
         newArrayStringified
       );
-      productsWatch();
+      productsIdWatch();
       changeOnInput();
     });
   }
@@ -140,6 +146,7 @@ const changeOnInput = async () => {
 
 let products = [];
 
+// récupère les ids dans le localStorage et le push dans products, cette fonction est joué à l'arrivé sur la page panier et à chaque changement de quantité dans changeNumberitem(); La variable products sera utilisé dans la dans le fichier form.js
 const productsIdWatch = () => {
   products = [];
   for (let i = 0; i < localStorage.length; i++) {
