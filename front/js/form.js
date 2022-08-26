@@ -131,6 +131,7 @@ form.addEventListener("submit", async (e) => {
   // verifie si aucun item n'est présent dans le localStorage
   if (localStorage.getItem(localStorage.key(0)) == null) {
     alert("Veuillez selectionner au moins un article avant de commander !");
+    document.location.href = `index.html`;
   }
   // si au moins un item présent nous rentrons dans la condition du else suivant
   else {

@@ -8,29 +8,14 @@ const quantity = document.getElementById("quantity");
 let addedToCart = [];
 let count = 0;
 let colorWatch = "";
-let randomIds = [];
-let id = [];
+let key = [];
 
-// crée un id à partir du titre de l'objet et de sa couleur
-function makeId() {
-  /* let length = 20;
-  let result = "";
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  if (randomIds.includes(result)) {
-    makeId();
-  }
-  randomIds.push(result);
-  console.log(randomIds);
-  return result; */
-  id = [];
-  id.push(title.textContent, colorWatch);
-  fullId = id.join(" ");
-  return fullId;
+// crée une key à partir du titre de l'objet et de sa couleur
+function makeKey() {
+  key = [];
+  key.push(title.textContent, colorWatch);
+  fullKey = key.join(" ");
+  return fullKey;
 }
 
 // ajoute au localstorage un id, nombre d'articles et la couleur
@@ -52,49 +37,43 @@ function addToStorage() {
   const ValueWatch = () => {
     for (let i = 0; i < localStorage.length; i++) {
       values.push(JSON.parse(localStorage[localStorage.key(i)]));
-      console.log(JSON.parse(localStorage[localStorage.key(i)]));
     }
-    console.log(values);
     return values;
   };
   ValueWatch();
 
-  //verifie si une clé contient la couleur meme couleur, si oui change nombre d'article
-
+  //verifie si une clé contient la meme couleur, si oui change nombre d'article
   if (colorWatch === "") {
     alert("Merci de choisir une couleur !");
   } else if (count == 0) {
     alert("Merci de choisir une quantité !");
   }
-  //verifie si le nouvel id existe deja dans le localstorage(keys)
-  else if (keys.includes(makeId())) {
+  //verifie si la nouvelle key existe deja dans le localstorage (keys)
+  else if (keys.includes(makeKey())) {
     for (let i = 0; i < localStorage.length; i++) {
-      //verifie si objet déja présent dans le panier
-      if (
-        checkIdUrl() === values[i][0] &&
-        count === values[i][1] &&
-        colorWatch === values[i][2]
-      ) {
-        return alert("Objet déjà présent dans le panier !");
+      // on transform count et values en integer pour pouvoir les additionner
+      countParsed = parseInt(count);
+      valueParsed = parseInt(values[i][1]);
+      // nouvelle quantité de l'article
+      newCount = countParsed + valueParsed;
+
+      if (newCount > 100) {
+        newCount = 100;
       }
-      //verifie si objet déja présent dans et si sa quantité est differente. modifie la quantité
-      else if (
-        checkIdUrl() === values[i][0] &&
-        count !== values[i][1] &&
-        colorWatch === values[i][2]
-      ) {
-        addedToCart = [checkIdUrl(), count, colorWatch];
-        let stringifiedTocart = JSON.stringify(addedToCart);
-        localStorage.setItem(makeId(), stringifiedTocart);
-        return alert("Quantité modifiée avec succès !");
-      }
+
+      //<----------------------------------------------------------------------->
+      // on remplace l'ancienne value par la nouvelle value "stringifiedToCart" dans le localStorage
+      addedToCart = [checkIdUrl(), newCount, colorWatch];
+      let stringifiedTocart = JSON.stringify(addedToCart);
+      localStorage.setItem(makeKey(), stringifiedTocart);
+      return alert("Quantité modifiée avec succès !");
     }
   }
   // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
   else {
     addedToCart = [checkIdUrl(), count, colorWatch];
     let stringifiedTocart = JSON.stringify(addedToCart);
-    localStorage.setItem(makeId(), stringifiedTocart);
+    localStorage.setItem(makeKey(), stringifiedTocart);
     alert("Objet ajouté avec succès !");
   }
 }

@@ -1,4 +1,4 @@
-/* <---------------------------------------------- constantes  --------------------------------------------------------------------> */
+/* <---------------------------------------------- constantes & variables  --------------------------------------------------------------------> */
 
 const cartItems = document.getElementById("cart__items");
 const cartItem = document.getElementsByClassName("cart__item");
@@ -6,6 +6,7 @@ const totalQuantity = document.getElementById("totalQuantity");
 const itemQuantity = document.getElementsByClassName("itemQuantity");
 const totalPrice = document.getElementById("totalPrice");
 const deleteItem = document.getElementsByClassName("deleteItem");
+let products = [];
 
 /* <---------------------------------------------- fonctions --------------------------------------------------------------------> */
 
@@ -22,42 +23,89 @@ const retrieveProductsData = () =>
     );
 
 // remplis le panier en comparant les ids dans l'api et le local storage
-const fillCart = async (products) => {
-  products.forEach((product) => {
+const fillCart = (products) => {
+  products.map((product) => {
     for (let i = 0; i < localStorage.length; i++) {
       let idStored = localStorage.getItem(localStorage.key(i));
       let idStoredParsed = JSON.parse(idStored);
 
       // product._id = id dans l'api && idStoredParsed[0] = id dans le localStorage
       if (product._id === idStoredParsed[0]) {
-        cartItems.innerHTML += `<article class="cart__item" data-id="${localStorage.key(
-          i
-        )}" data-color="${idStoredParsed[2]}">
-    <div class="cart__item__img">
-    <img src="${product.imageUrl}" alt="${product.altTxt}">
-    </div>
-    <div class="cart__item__content">
-    <div class="cart__item__content__description">
-    <h2>${product.name}</h2>
-    <p>${idStoredParsed[2]}</p>
-    <p>${product.price} €</p>
-    </div>
-    <div class="cart__item__content__settings">
-    <div class="cart__item__content__settings__quantity">
-    <p>Qté : ${idStoredParsed[1]} </p>
-    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${
-      idStoredParsed[1]
-    }">
-    </div>
-    <div class="cart__item__content__settings__delete">
-    <p class="deleteItem">Supprimer</p>
-    </div>
-    </div>
-    </div>
-    </article>
-    `;
+        /* -------------------------- creations des éléments ------------------------------------- */
+        let article = document.createElement("article");
+        let divImg = document.createElement("div");
+        let img = document.createElement("img");
+        let divContent = document.createElement("div");
+        let divContentDescription = document.createElement("div");
+        let h2 = document.createElement("h2");
+        let pColor = document.createElement("p");
+        let pPrice = document.createElement("p");
+        let divContentSettings = document.createElement("div");
+        let divContentSettingsQuantity = document.createElement("div");
+        let pQuantité = document.createElement("p");
+        let pInput = document.createElement("input");
+        let divContentSettingsDelete = document.createElement("div");
+        let pDelete = document.createElement("p");
+
+        /* -------------------------- creations des attributs des éléments ------------------------------------- */
+
+        article.setAttribute("class", "cart__item");
+        article.setAttribute("data-id", `${localStorage.key(i)}`);
+        article.setAttribute("data-color", `${idStoredParsed[2]}`);
+        divImg.setAttribute("class", "cart__item__img");
+        img.setAttribute("src", product.imageUrl);
+        img.setAttribute("alt", product.altTxt);
+        divContent.setAttribute("class", "cart__item__content");
+        divContentDescription.setAttribute(
+          "class",
+          "cart__item__content__description"
+        );
+        divContentSettings.setAttribute(
+          "class",
+          "cart__item__content__settings"
+        );
+        divContentSettingsQuantity.setAttribute(
+          "class",
+          "cart__item__content__settings__quantity"
+        );
+        pInput.setAttribute("type", "number");
+        pInput.setAttribute("class", "itemQuantity");
+        pInput.setAttribute("name", "itemQuantity");
+        pInput.setAttribute("min", "1");
+        pInput.setAttribute("max", "100");
+        pInput.setAttribute("value", `${idStoredParsed[1]}`);
+        divContentSettingsDelete.setAttribute(
+          "class",
+          "cart__item__content__settings__delete"
+        );
+        pDelete.setAttribute("class", "deleteItem");
+
+        /* -------------------------- insertion de texte ------------------------------------- */
+
+        h2.innerText = product.name;
+        pColor.innerText = idStoredParsed[2];
+        pPrice.innerText = product.price + " €";
+        pQuantité.innerText = "Qté :";
+        pDelete.innerText = "Supprimer";
+
+        /* -------------------------- insertion des elements crée dans leurs parents ------------------------------------- */
+
+        cartItems.appendChild(article);
+        article.append(divImg, divContent);
+        divImg.appendChild(img);
+        divContent.append(divContentDescription, divContentSettings);
+        divContentDescription.append(h2, pColor, pPrice);
+        divContentSettings.append(
+          divContentSettingsQuantity,
+          divContentSettingsDelete
+        );
+        divContentSettingsQuantity.append(pQuantité, pInput);
+        divContentSettingsDelete.appendChild(pDelete);
+
+        /* -------------------------- fonction à lancer dans le scope de fillCart() ------------------------------------- */
+
         deleteItemFn();
-        changeNumberitem();
+        changeQuantity();
       }
     }
   });
@@ -65,7 +113,7 @@ const fillCart = async (products) => {
 
 // additionne le nombre d'items dans le panier
 const sumQuantity = (products) => {
-  let total = 0;
+  let totalItems = 0;
   products.forEach((product) => {
     for (let i = 0; i < localStorage.length; i++) {
       let itemStored = localStorage.getItem(localStorage.key(i));
@@ -73,14 +121,14 @@ const sumQuantity = (products) => {
       if (product._id === itemStoredParsed[0]) {
         let nth = itemStoredParsed[1];
         let nthParsed = parseInt(nth);
-        total += nthParsed;
+        totalItems += nthParsed;
       }
     }
-    totalQuantity.textContent = total;
+    totalQuantity.textContent = totalItems;
   });
 };
 
-// additionne le prix des items dans le panier
+// additionne le prix des items présent dans le panier
 const sumPrice = (products) => {
   let total = 0;
   products.forEach((product) => {
@@ -97,35 +145,30 @@ const sumPrice = (products) => {
   });
 };
 
-// supprime un item
+// supprime un article
 const deleteItemFn = () => {
   for (let i = 0; i < deleteItem.length; i++) {
     deleteItem[i].addEventListener("click", () => {
       localStorage.removeItem(cartItem[i].getAttribute("data-id"));
+      console.log("test");
       location.reload();
     });
   }
 };
 // changer le nombre d'items
-const changeNumberitem = () => {
+const changeQuantity = () => {
   // récupère la quantité d'item par item dans le panier
   for (let i = 0; i < itemQuantity.length; i++) {
     // mis à jour à chaque changement de quantité
     itemQuantity[i].addEventListener("change", () => {
-      let id = cartItem[i].getAttribute("data-id");
-      const quantity = document.querySelector(
-        `[data-id="${id}"]  .cart__item__content__settings__quantity p`
-      );
       let newItemQuantity = itemQuantity[i].value;
       let newArray = [];
-
-      // incrémente la nouvelle quantité dans l'item
-      quantity.textContent = `Qté : ${newItemQuantity}`;
 
       // incrémente le nouveau total des quantités des items dans le panier
       newArray = JSON.parse(
         localStorage.getItem(cartItem[i].getAttribute("data-id"))
       );
+      console.log(cartItem[i]);
       newArray[1] = newItemQuantity;
       let newArrayStringified = JSON.stringify(newArray);
       localStorage.setItem(
@@ -137,16 +180,14 @@ const changeNumberitem = () => {
     });
   }
 };
-// permet d'utiliser sumprice et sumquantity
+// permet d'utiliser sumprice et sumquantity à chaque changement de quantité
 const changeOnInput = async () => {
   const productsData = await retrieveProductsData();
   sumPrice(productsData);
   sumQuantity(productsData);
 };
 
-let products = [];
-
-// récupère les ids dans le localStorage et le push dans products, cette fonction est joué à l'arrivé sur la page panier et à chaque changement de quantité dans changeNumberitem(); La variable products sera utilisé dans la dans le fichier form.js
+// récupère les ids dans le localStorage et le push dans products, cette fonction est joué à l'arrivé sur la page panier et à chaque changement de quantité dans changeQuantity(); La variable products sera aussi utilisé dans la dans le fichier form.js
 const productsIdWatch = () => {
   products = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -157,7 +198,7 @@ const productsIdWatch = () => {
 };
 productsIdWatch();
 
-// attends les données de l'api pour les fournir à fillCart & sumprice
+// attends les données de l'api pour les fournir à fillCart
 const mainCart = async () => {
   const productsData = await retrieveProductsData();
   console.log(productsData);
