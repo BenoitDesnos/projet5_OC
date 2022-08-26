@@ -32,17 +32,16 @@ function addToStorage() {
   };
   keyWatch();
 
-  // récupère les valeurs des differents keys dans la local storage et les stocks dans values
-  let values = [];
-  const ValueWatch = () => {
+  // récupère la quantité dans le localStorage de la key dernièrement modifiée ou créée (permettra de verifier si ancienne quantité + nouvelle quantité <= 100)
+  let quantityValue;
+  const quantityWatch = () => {
     for (let i = 0; i < localStorage.length; i++) {
-      values.push(JSON.parse(localStorage[localStorage.key(i)]));
+      quantityValue = JSON.parse(localStorage[localStorage.key(i)])[1];
     }
-    return values;
+    return quantityValue;
   };
-  ValueWatch();
+  quantityWatch();
 
-  //verifie si une clé contient la meme couleur, si oui change nombre d'article
   if (colorWatch === "") {
     alert("Merci de choisir une couleur !");
   } else if (count == 0) {
@@ -50,28 +49,32 @@ function addToStorage() {
   }
   //verifie si la nouvelle key existe deja dans le localstorage (keys)
   else if (keys.includes(makeKey())) {
-    for (let i = 0; i < localStorage.length; i++) {
-      // on transform count et values en integer pour pouvoir les additionner
-      countParsed = parseInt(count);
-      valueParsed = parseInt(values[i][1]);
-      // nouvelle quantité de l'article
-      newCount = countParsed + valueParsed;
-
-      if (newCount > 100) {
-        newCount = 100;
-      }
-
-      //<----------------------------------------------------------------------->
-      // on remplace l'ancienne value par la nouvelle value "stringifiedToCart" dans le localStorage
-      addedToCart = [checkIdUrl(), newCount, colorWatch];
-      let stringifiedTocart = JSON.stringify(addedToCart);
-      localStorage.setItem(makeKey(), stringifiedTocart);
-      return alert("Quantité modifiée avec succès !");
+    // on transform count et quantityValue en integer pour pouvoir les additionner
+    countParsed = parseInt(count);
+    quantityParsed = parseInt(quantityValue);
+    // nouvelle quantité de l'article
+    newCount = countParsed + quantityParsed;
+    // si le nouveau total est supérieur à 100 on bloque la quantité à 100 et envoies un message d'explication
+    if (newCount > 100) {
+      newCount = 100;
+      alert(
+        `votre panier contient déjà ${quantityParsed} fois cette article, Le nombre d'article maximal etant de 100, l'article a été ajouté ${
+          100 - quantityParsed
+        } fois au lieu de ${countParsed}.`
+      );
     }
+
+    //<----------------------------------------------------------------------->
+    // on remplace l'ancienne value par la nouvelle value "stringifiedToCart" dans le localStorage
+    addedToCart = [checkIdUrl(), newCount, colorWatch];
+    let stringifiedTocart = JSON.stringify(addedToCart);
+    localStorage.setItem(makeKey(), stringifiedTocart);
+    console.log(newCount);
+    return alert("Quantité modifiée avec succès !");
   }
   // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
   else {
-    addedToCart = [checkIdUrl(), count, colorWatch];
+    addedToCart = [(id = checkIdUrl()), count, colorWatch];
     let stringifiedTocart = JSON.stringify(addedToCart);
     localStorage.setItem(makeKey(), stringifiedTocart);
     alert("Objet ajouté avec succès !");
