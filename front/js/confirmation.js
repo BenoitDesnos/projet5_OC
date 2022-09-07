@@ -14,4 +14,5 @@ else {
   const idCommande = document.getElementById("orderId");
   // On insère le numéro de commande dans le html
   idCommande.innerText = urlOrderId;
+  localStorage.clear();
 }

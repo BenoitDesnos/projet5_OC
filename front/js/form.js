@@ -139,7 +139,7 @@ form.addEventListener("submit", async (e) => {
     if (firstName && lastName && address && city && email) {
       console.log(products);
 
-      // values de chaque input dans le form.
+      // values de chaque input du form.
       const contact = {
         firstName,
         lastName,
