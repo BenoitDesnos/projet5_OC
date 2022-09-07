@@ -53,7 +53,6 @@ const lastNameChecker = (value) => {
       "lastName",
       "Le nom ne doit pas contenir de caractères spéciaux"
     );
-    console.log("test");
     lastName = null;
   } else {
     errorDisplay("lastName", "", true);
@@ -137,8 +136,6 @@ form.addEventListener("submit", async (e) => {
   else {
     // verifie si les values ont bien été retournées par les fonctions de verifications, les fonctions de verifications retourne une variable null si elle ne correspondent pas aux conditions. Nous verifions donc si elles ne sont PAS null.
     if (firstName && lastName && address && city && email) {
-      console.log(products);
-
       // values de chaque input du form.
       const contact = {
         firstName,
@@ -166,7 +163,6 @@ form.addEventListener("submit", async (e) => {
       fetch("http://localhost:3000/api/products/order", options)
         .then((res) => res.json())
         .then((data) => {
-          //console.log(data);
           // on redirige vers la page de confirmation de commande en passant l'orderId (numéro de commande) dans l'URL
           document.location.href = `confirmation.html?orderId=${data.orderId}`;
         })

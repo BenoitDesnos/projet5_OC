@@ -145,16 +145,17 @@ const sumPrice = (products) => {
   });
 };
 
-// supprime un article
+// supprime l'item du localstorage et du DOM
 const deleteItemFn = () => {
-  for (let i = 0; i < deleteItem.length; i++) {
-    deleteItem[i].addEventListener("click", () => {
-      localStorage.removeItem(cartItem[i].getAttribute("data-id"));
-      console.log("test");
-      location.reload();
+  // array.from sert à acceder à forEach car getElementsByclassname est une HTMLcollection et non une nodelist
+  Array.from(deleteItem).forEach((item) => {
+    item.addEventListener("click", () => {
+      localStorage.removeItem(item.closest("article").getAttribute("data-id"));
+      item.closest("article").remove();
     });
-  }
+  });
 };
+
 // changer le nombre d'items
 const changeQuantity = () => {
   // récupère la quantité d'item par item dans le panier
@@ -168,7 +169,7 @@ const changeQuantity = () => {
       newArray = JSON.parse(
         localStorage.getItem(cartItem[i].getAttribute("data-id"))
       );
-      console.log(cartItem[i]);
+
       newArray[1] = newItemQuantity;
       let newArrayStringified = JSON.stringify(newArray);
       localStorage.setItem(
@@ -193,7 +194,7 @@ const productsIdWatch = () => {
   for (let i = 0; i < localStorage.length; i++) {
     products.push(JSON.parse(localStorage[localStorage.key(i)])[0]);
   }
-  console.log(products);
+
   return products;
 };
 productsIdWatch();
@@ -201,7 +202,7 @@ productsIdWatch();
 // attends les données de l'api pour les fournir à fillCart
 const mainCart = async () => {
   const productsData = await retrieveProductsData();
-  console.log(productsData);
+  /* console.log(productsData); */
   fillCart(productsData);
 };
 mainCart();

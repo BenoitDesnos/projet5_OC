@@ -1,5 +1,4 @@
 const items = document.getElementById("items");
-console.log(items);
 
 // recupère les données situées dans l'api
 const retrieveProductsData = () =>
@@ -38,8 +37,6 @@ const fillProductsTable = (productsData) => {
 
   // ajoute toutes les balises <a> que productsBlock retourne
   items.append(...productsBlock);
-  /* console.log(productsBlock); */
-  /* console.log("test"); */
 };
 
 // attends les données de l'api pour les fournir à fillProductsData

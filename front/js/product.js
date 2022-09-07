@@ -59,7 +59,7 @@ function addToStorage() {
       }
     }
     // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
-    addedToCart = [(id = checkIdUrl()), inputQuantity, colorWatch];
+    addedToCart = [checkIdUrl(), inputQuantity, colorWatch];
     let stringifiedTocart = JSON.stringify(addedToCart);
     localStorage.setItem(makeKey(), stringifiedTocart);
     alert("Objet ajouté avec succès !");
