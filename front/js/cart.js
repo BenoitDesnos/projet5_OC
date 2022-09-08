@@ -6,7 +6,7 @@ const totalQuantity = document.getElementById("totalQuantity");
 const itemQuantity = document.getElementsByClassName("itemQuantity");
 const totalPrice = document.getElementById("totalPrice");
 const deleteItem = document.getElementsByClassName("deleteItem");
-let products = [];
+var products = [];
 
 /* <---------------------------------------------- fonctions --------------------------------------------------------------------> */
 
@@ -102,7 +102,7 @@ const fillCart = (products) => {
         divContentSettingsQuantity.append(pQuantité, pInput);
         divContentSettingsDelete.appendChild(pDelete);
 
-        /* -------------------------- fonction à lancer dans le scope de fillCart() ------------------------------------- */
+        /* -------------------------- fonction à lancer dans le scope de fillCart() car besoin des elements sur le DOM ------------------------------------- */
 
         deleteItemFn();
         changeQuantity();
@@ -159,27 +159,29 @@ const deleteItemFn = () => {
 // changer le nombre d'items
 const changeQuantity = () => {
   // récupère la quantité d'item par item dans le panier
-  for (let i = 0; i < itemQuantity.length; i++) {
-    // mis à jour à chaque changement de quantité
-    itemQuantity[i].addEventListener("change", () => {
-      let newItemQuantity = itemQuantity[i].value;
+  Array.from(itemQuantity).forEach((quantity) => {
+    quantity.addEventListener("change", () => {
+      let newItemQuantity = quantity.value;
       let newArray = [];
 
-      // incrémente le nouveau total des quantités des items dans le panier
+      // récupère l'item concercné dans le localStorage avec getItem
       newArray = JSON.parse(
-        localStorage.getItem(cartItem[i].getAttribute("data-id"))
+        localStorage.getItem(
+          quantity.closest("article").getAttribute("data-id")
+        )
       );
-
+      // modifie la quantité avec la nouvelle
       newArray[1] = newItemQuantity;
+      // renvoie l'item et sa quantité modifié avec setItem.
       let newArrayStringified = JSON.stringify(newArray);
       localStorage.setItem(
-        cartItem[i].getAttribute("data-id"),
+        quantity.closest("article").getAttribute("data-id"),
         newArrayStringified
       );
-      productsIdWatch();
+      // fonction ayant besoin d'être mise à jour à chaque changement de quantité
       changeOnInput();
     });
-  }
+  });
 };
 // permet d'utiliser sumprice et sumquantity à chaque changement de quantité
 const changeOnInput = async () => {
@@ -187,17 +189,6 @@ const changeOnInput = async () => {
   sumPrice(productsData);
   sumQuantity(productsData);
 };
-
-// récupère les ids dans le localStorage et le push dans products, cette fonction est joué à l'arrivé sur la page panier et à chaque changement de quantité dans changeQuantity(); La variable products sera aussi utilisé dans la dans le fichier form.js
-const productsIdWatch = () => {
-  products = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    products.push(JSON.parse(localStorage[localStorage.key(i)])[0]);
-  }
-
-  return products;
-};
-productsIdWatch();
 
 // attends les données de l'api pour les fournir à fillCart
 const mainCart = async () => {

@@ -5,6 +5,7 @@ const inputs = document.querySelectorAll(
   'input[type="text"], input[type="email"]'
 );
 const error = document.querySelector(" #firstName + p");
+var product = [];
 let firstName, lastName, address, city, email;
 let regexText = /^[a-zA-Z_.-]*$/g;
 let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -94,6 +95,11 @@ const cityChecker = (value) => {
     city = value;
   }
 };
+
+// récupère les ids dans le localStorage et le push dans products, afin de les envoyer dans le form
+for (let i = 0; i < localStorage.length; i++) {
+  products.push(JSON.parse(localStorage[localStorage.key(i)])[0]);
+}
 
 /* <-------------------------------------------------------------------------------------------------------------------------------------------> */
 
