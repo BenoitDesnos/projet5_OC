@@ -5,8 +5,8 @@ const description = document.getElementById("description");
 const colors = document.getElementById("colors");
 const quantity = document.getElementById("quantity");
 
-let cartContent = ["bonjour", "aurevoir"];
-let colorWatch = "";
+var colorWatch = "";
+
 var arrayOfCart = [];
 
 // récupère le paramètre id dans l'url
@@ -16,15 +16,32 @@ const checkIdUrl = () => {
   return idParams;
 };
 // crée une key à partir du titre de l'objet et de sa couleur
-function makeKey() {
-  let key = [];
-  key.push(checkIdUrl(), colorWatch);
-  fullKey = key.join(" ");
-  return fullKey;
-}
+const createNewItem = (inputQuantity, colorWatch) => {
+  let storedItems = JSON.parse(localStorage.getItem("Panier"));
+  let newItem = {
+    id: checkIdUrl(),
+    quantity: inputQuantity,
+    color: colorWatch,
+  };
+  console.log(newItem);
+  console.log(storedItems);
 
+  if (storedItems) {
+    storedItems.push(newItem);
+    console.log("1");
+  } else {
+    storedItems = [];
+    storedItems.push(newItem);
+    console.log("2");
+  }
+
+  let stringifiedStoreditems = JSON.stringify(storedItems);
+  localStorage.setItem("Panier", stringifiedStoreditems);
+  alert("Objet ajouté avec succès !");
+};
 // ajoute au localstorage un id, nombre d'articles et la couleur
 function addToStorage() {
+  let storedItems = JSON.parse(localStorage.getItem("Panier"));
   let inputQuantity = quantity.value;
   colorWatch = colors.value;
   if (colorWatch === "") {
@@ -32,59 +49,51 @@ function addToStorage() {
   } else if (inputQuantity == 0) {
     alert("Merci de choisir une quantité !");
   } else {
-    let storedItems = JSON.parse(localStorage.getItem("Panier"));
-    if (storedItems) {
-      for (let i = 0; i < storedItems.length; i++) {
-        /*    console.log(storedItems);
-        console.log(localStorage.getItem("Panier").length);
-        console.log(makeKey());
-        console.log(storedItems[i].key); */
-        //verifie si la clé que nous créons (makeKey()) existe déjà dans le localStorage (localStorage.key(i))
-        if (storedItems[i].key.includes(makeKey())) {
-          console.log(JSON.parse(localStorage.getItem("Panier"))[i]);
+    // on récupère le panier dans le localStorage
 
+    //verifie si sotredItems existe
+    if (storedItems) {
+      for (const item of storedItems) {
+        // verifie si l'objet que nous ajoutons existe deja dans le localstorage (meme couleur & id)
+        if (item.id.includes(checkIdUrl()) && item.color.includes(colorWatch)) {
           // on transforme inputQuantity et la quantité dans le localStorage en integer pour pouvoir les additionner
-          let countParsed = parseInt(inputQuantity);
-          let quantityParsed = parseInt(storedItems[i].quantity);
+          let inputQuantityParsed = parseInt(inputQuantity);
+          let quantityParsed = parseInt(item.quantity);
           // nouvelle quantité de l'article
-          let newInputQuantity = countParsed + quantityParsed;
+          let newInputQuantity = inputQuantityParsed + quantityParsed;
           // si le nouveau total est supérieur à 100 on bloque la quantité à 100 et envoie un message d'explication
           if (newInputQuantity > 100) {
             newInputQuantity = 100;
             alert(
               `votre panier contient déjà ${quantityParsed} fois cette article, Le nombre d'article maximal etant de 100, l'article a été ajouté ${
                 100 - quantityParsed
-              } fois au lieu de ${countParsed}.`
+              } fois au lieu de ${inputQuantityParsed}.`
             );
           }
-          // on remplace l'ancienne value par la nouvelle value "stringifiedToCart" dans le localStorage
-          cartContent = {
-            key: makeKey(),
+          item.quantity = newInputQuantity;
+          let stringifiedStoreditems = JSON.stringify(storedItems);
+          localStorage.setItem("Panier", stringifiedStoreditems);
+          /*  newItem = {
             id: checkIdUrl(),
             quantity: newInputQuantity,
             color: colorWatch,
           };
-          storedItems.splice(i, 1, cartContent);
-          let stringifiedTocart = JSON.stringify(storedItems);
-          localStorage.setItem("Panier", stringifiedTocart);
+          // on remplace l'ancien objet avec un nouveau objet dont la quantité est MAJ
+          storedItems.splice(i, 1, newItem);
+          let stringifiedStoreditems = JSON.stringify(storedItems);
+          localStorage.setItem("Panier", stringifiedStoreditems); */
           newInputQuantity = 0;
           return alert("Quantité modifiée avec succès !");
         }
       }
+
+      createNewItem(inputQuantity, colorWatch);
+    }
+    //si storedItems n'existe pas >> rien dans le localStorage
+    else {
+      createNewItem(inputQuantity, colorWatch);
     }
     // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
-
-    cartContent = {
-      key: makeKey(),
-      id: checkIdUrl(),
-      quantity: inputQuantity,
-      color: colorWatch,
-    };
-
-    arrayOfCart.push(cartContent);
-    let stringifiedTocart = JSON.stringify(arrayOfCart);
-    localStorage.setItem("Panier", stringifiedTocart);
-    alert("Objet ajouté avec succès !");
   }
 }
 addToCart.addEventListener("click", addToStorage);
