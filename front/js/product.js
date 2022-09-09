@@ -4,10 +4,21 @@ const price = document.getElementById("price");
 const description = document.getElementById("description");
 const colors = document.getElementById("colors");
 const quantity = document.getElementById("quantity");
-
+console.log(localStorage);
 var colorWatch = "";
-
 var arrayOfCart = [];
+
+// récupère la data de l'api à l'aide de l'id dans l'url
+const retrieveProductsData = () =>
+  fetch("http://localhost:3000/api/products/" + checkIdUrl())
+    .then((res) => res.json())
+    .then((data) => data)
+    .catch((err) =>
+      console.log(
+        "Une erreur s'est produite sur la fonction retrieveProductsData ",
+        err
+      )
+    );
 
 // récupère le paramètre id dans l'url
 const checkIdUrl = () => {
@@ -23,22 +34,18 @@ const createNewItem = (inputQuantity, colorWatch) => {
     quantity: inputQuantity,
     color: colorWatch,
   };
-  console.log(newItem);
-  console.log(storedItems);
-
   if (storedItems) {
     storedItems.push(newItem);
-    console.log("1");
   } else {
     storedItems = [];
     storedItems.push(newItem);
-    console.log("2");
   }
 
   let stringifiedStoreditems = JSON.stringify(storedItems);
   localStorage.setItem("Panier", stringifiedStoreditems);
   alert("Objet ajouté avec succès !");
 };
+
 // ajoute au localstorage un id, nombre d'articles et la couleur
 function addToStorage() {
   let storedItems = JSON.parse(localStorage.getItem("Panier"));
@@ -73,15 +80,6 @@ function addToStorage() {
           item.quantity = newInputQuantity;
           let stringifiedStoreditems = JSON.stringify(storedItems);
           localStorage.setItem("Panier", stringifiedStoreditems);
-          /*  newItem = {
-            id: checkIdUrl(),
-            quantity: newInputQuantity,
-            color: colorWatch,
-          };
-          // on remplace l'ancien objet avec un nouveau objet dont la quantité est MAJ
-          storedItems.splice(i, 1, newItem);
-          let stringifiedStoreditems = JSON.stringify(storedItems);
-          localStorage.setItem("Panier", stringifiedStoreditems); */
           newInputQuantity = 0;
           return alert("Quantité modifiée avec succès !");
         }
@@ -97,18 +95,6 @@ function addToStorage() {
   }
 }
 addToCart.addEventListener("click", addToStorage);
-
-// récupère la data de l'api à l'aide de l'id dans l'url
-const retrieveProductsData = () =>
-  fetch("http://localhost:3000/api/products/" + checkIdUrl())
-    .then((res) => res.json())
-    .then((data) => data)
-    .catch((err) =>
-      console.log(
-        "Une erreur s'est produite sur la fonction retrieveProductsData ",
-        err
-      )
-    );
 
 // les deux fonctions suivantes remplissent le html à l'aide de la fonction mainProduct en dessous qui récupère la data en asynchrone
 const fillItemImg = (product) => {

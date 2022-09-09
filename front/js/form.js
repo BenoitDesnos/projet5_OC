@@ -5,6 +5,7 @@ const inputs = document.querySelectorAll(
   'input[type="text"], input[type="email"]'
 );
 const error = document.querySelector(" #firstName + p");
+
 var product = [];
 let firstName, lastName, address, city, email;
 let regexText = /^[a-zA-Z_.-]*$/g;
@@ -97,8 +98,9 @@ const cityChecker = (value) => {
 };
 
 // récupère les ids dans le localStorage et le push dans products, afin de les envoyer dans le form
-for (let i = 0; i < localStorage.length; i++) {
-  products.push(JSON.parse(localStorage[localStorage.key(i)])[0]);
+let products = [];
+for (let i = 0; i < storedItems.length; i++) {
+  products.push(storedItems[i].id);
 }
 
 /* <-------------------------------------------------------------------------------------------------------------------------------------------> */
@@ -134,7 +136,7 @@ inputs.forEach((input) => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   // verifie si aucun item n'est présent dans le localStorage
-  if (localStorage.getItem(localStorage.key(0)) == null) {
+  if (!storedItems) {
     alert("Veuillez selectionner au moins un article avant de commander !");
     document.location.href = `index.html`;
   }
