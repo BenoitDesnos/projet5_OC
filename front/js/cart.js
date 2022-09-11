@@ -42,16 +42,14 @@ const retrieveProductsPromise = () => {
 // permets de mettre à jour totaux et/ou DOM apres resolution des promesses
 const mainCart = () => {
   const productsPromise = retrieveProductsPromise();
-  // on résoud les promesses retournées par retrieveProductsPromise() et les passe en arguments des fn
+  // on résout les promesses retournées par retrieveProductsPromise() et les passe en arguments des fn
   Promise.all(productsPromise).then((products) => {
-    // Cette condition permet de pouvoir lancer les fn sumPrice & sumQuantity sans fillCart qui ne se jouera qu'une seule fois au chargement de la page
+    // Cette condition permet de pouvoir lancer la fn sumTotals sans fillCart qui ne se jouera qu'une seule fois au chargement de la page en verifiant si un ou plusieurs child article sont présent sur le DOM
     if (!document.querySelector("#cart__items > article")) {
       // verifie si DOM enfant à cartItems existe
       fillCart(products);
     }
-    console.log(products);
-    sumPrice(products);
-    sumQuantity(products);
+    sumTotals(products);
   });
 };
 
@@ -65,7 +63,6 @@ if (localStorage.getItem("Panier")) {
 const fillCart = (apiProducts) => {
   //on joue chaque produits récupérés
   apiProducts.map((apiProduct) => {
-    console.log(storedItems.length);
     //boucle for pour avoir accès à l'index de storedItems
     for (let i = 0; i < storedItems.length; i++) {
       // dès qu'un id de stocké match avec l'id de l'api on ajoute alors les infos présentent dans l'api au DOM
@@ -151,23 +148,31 @@ const fillCart = (apiProducts) => {
 };
 
 // additionne le nombre d'items dans le panier
-const sumQuantity = (apiProducts) => {
-  let totalItems = 0;
+const sumTotals = (apiProducts) => {
+  let totalP = 0; // total price
+  let totalQ = 0; // total Quantity
   apiProducts.forEach((apiProduct) => {
     for (let i = 0; i < storedItems.length; i++) {
+      // récupère la quantité et le prix pour chaque produit affiché sur le DOM (quand l'id de l'api match l'id du storage)
       if (apiProduct._id === storedItems[i].id) {
+        // on calcul la quantité
         let quantity = storedItems[i].quantity;
         let quantityParsed = parseInt(quantity);
-
-        totalItems += quantityParsed;
+        totalQ += quantityParsed;
+        // on calcul le prix
+        let price = apiProduct.price;
+        let priceParsed = parseInt(price);
+        totalP += priceParsed * storedItems[i].quantity;
       }
     }
-    totalQuantity.textContent = totalItems;
+    // on met à jour le DOM avec les nouvelles données
+    totalQuantity.textContent = totalQ;
+    totalPrice.textContent = totalP;
   });
 };
 
 // additionne le prix des items présent dans le panier
-const sumPrice = (apiProducts) => {
+/* const sumPrice = (apiProducts) => {
   let total = 0;
   apiProducts.forEach((apiProduct) => {
     for (let i = 0; i < storedItems.length; i++) {
@@ -179,15 +184,16 @@ const sumPrice = (apiProducts) => {
     }
     totalPrice.textContent = total;
   });
-};
+}; */
 
 // supprime l'item du localstorage et du DOM
 const deleteItemFn = () => {
   // array.from sert à acceder à forEach car getElementsByclassname est une HTMLcollection et non une nodelist
-  Array.from(deleteItem).forEach((item) => {
-    item.addEventListener("click", () => {
+  Array.from(deleteItem).forEach((deleteButton) => {
+    deleteButton.addEventListener("click", () => {
       // on selectionne l'item a supprimer grace à l'index d'items
-      let itemToDelete = storedItems[Array.from(deleteItem).indexOf(item)];
+      let itemToDelete =
+        storedItems[Array.from(deleteItem).indexOf(deleteButton)];
       // on garde tous les items qui sont differents de l'item a supprimer grace à filter()
       storedItems = storedItems.filter(
         (storedItems) => storedItems !== itemToDelete
@@ -196,7 +202,7 @@ const deleteItemFn = () => {
       let stringifiedstoredItems = JSON.stringify(storedItems);
       localStorage.setItem("Panier", stringifiedstoredItems);
 
-      item.closest("article").remove();
+      deleteButton.closest("article").remove();
       mainCart(); // pour mettre à jour totaux
     });
   });
@@ -207,16 +213,19 @@ const updateQuantity = () => {
   // récupère la quantité d'item par item dans le panier
   Array.from(itemQuantity).forEach((quantity) => {
     quantity.addEventListener("change", () => {
-      let newItemQuantity = quantity.value;
-      var myItem = quantity.closest("article");
+      let newItemQuantity = quantity.value; // nouvelle quantité à chanque input change
+      let myItem = quantity.closest("article"); // selectionne la balise article de l'item dont on change la quantité
       for (const item of storedItems) {
+        //on vérifie si l'item dont on change la quantité  est présent dans le sotrage
         if (
           item.id === myItem.dataset.id &&
           item.color === myItem.dataset.color
         ) {
+          //si oui on change la quantité
           item.quantity = newItemQuantity;
         }
       }
+      // et on met à jour dans le localStorage
       let stringifiedStoreditems = JSON.stringify(storedItems);
       localStorage.setItem("Panier", stringifiedStoreditems);
 

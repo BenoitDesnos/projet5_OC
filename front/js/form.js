@@ -6,7 +6,7 @@ const inputs = document.querySelectorAll(
 );
 const error = document.querySelector(" #firstName + p");
 
-var product = [];
+let products = [];
 let firstName, lastName, address, city, email;
 let regexText = /^[a-zA-Z_.-]*$/g;
 let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -16,23 +16,12 @@ let regexAdress = /^[a-zA-Z0-9\s,'-]*$/gi;
 
 /* <---------------------------------------------- Fonctions de verifications des inputs --------------------------------------------------------------------> */
 
-const errorDisplay = (tag, message, valid) => {
-  const container = document.getElementById(tag);
-  const error = document.querySelector("#" + tag + " + p");
-
-  if (!valid) {
-    container.classList.add("error");
-    error.textContent = message;
-  } else {
-    container.classList.remove("error");
-    error.textContent = message;
-  }
-};
+/* chaque fonction de vérification utilise en argument la value rentrée a chaque input grace à la fonction addEventListener qui les suit */
 
 // verifie les conditions du prénom et retourne la variable seulement si conditions remplies
 const firstNameChecker = (value) => {
-  if (value.length > 0 && (value.length < 2 || value.length > 20)) {
-    errorDisplay("firstName", "Le prénom doit faire entre 2 et 20 caractères");
+  if (value.length > 0 && (value.length < 2 || value.length > 60)) {
+    errorDisplay("firstName", "Le prénom doit faire entre 2 et 60 caractères");
     firstName = null;
   } else if (!value.match(regexText)) {
     errorDisplay(
@@ -45,10 +34,11 @@ const firstNameChecker = (value) => {
     firstName = value;
   }
 };
+
 // verifie les conditions du nom et retourne la variable seulement si conditions remplies
 const lastNameChecker = (value) => {
-  if (value.length > 0 && (value.length < 2 || value.length > 20)) {
-    errorDisplay("lastName", "Le nom doit faire entre 2 et 20 caractères");
+  if (value.length > 0 && (value.length < 2 || value.length > 60)) {
+    errorDisplay("lastName", "Le nom doit faire entre 2 et 60 caractères");
     lastName = null;
   } else if (!value.match(regexText)) {
     errorDisplay(
@@ -61,6 +51,7 @@ const lastNameChecker = (value) => {
     lastName = value;
   }
 };
+
 // verifie les conditions de l'email et retourne la variable seulement si conditions remplies
 const emailChecker = (value) => {
   if (!value.match(regexEmail)) {
@@ -74,7 +65,7 @@ const emailChecker = (value) => {
 
 // verifie les conditions de l'adresse et retourne la variable seulement si conditions remplies
 const addressChecker = (value) => {
-  if (!value.match(/^[a-zA-Z0-9\s,'-]*$/gi)) {
+  if (!value.match(regexAdress)) {
     errorDisplay(
       "address",
       "L'adresse ne peut pas contenir de caractères spéciaux autre que le point, la virgule ainsi que le tiret central."
@@ -97,17 +88,28 @@ const cityChecker = (value) => {
   }
 };
 
-// récupère les ids dans le localStorage et le push dans products, afin de les envoyer dans le form
-let products = [];
-for (let i = 0; i < storedItems.length; i++) {
-  products.push(storedItems[i].id);
-}
+// fn gérant l'affichage des erreurs sur le DOM pour chaque fn de vérification
+/*  tag = class ou id ou selecteur 
+    message = message à afficher si erreur vraie
+    valid = boolean true = no error  false = error */
+const errorDisplay = (tag, message, valid) => {
+  const container = document.getElementById(tag);
+  const error = document.querySelector("#" + tag + " + p");
+
+  if (!valid) {
+    container.classList.add("error");
+    error.textContent = message;
+  } else {
+    container.classList.remove("error");
+    error.textContent = message;
+  }
+};
 
 /* <-------------------------------------------------------------------------------------------------------------------------------------------> */
 
 /* <---------------------------------------------------------------EventListeners----------------------------------------------------------------> */
 
-// lance chaque fonction de verification selon l'input que nous utilisons
+// lance chaque fonction de verification selon l'input que nous utilisons, nous utilisons la value rentrée en argument
 inputs.forEach((input) => {
   input.addEventListener("input", (e) => {
     switch (e.target.id) {
@@ -142,6 +144,10 @@ form.addEventListener("submit", async (e) => {
   }
   // si au moins un item présent nous rentrons dans la condition du else suivant
   else {
+    // récupère les ids dans le localStorage et le push dans products, afin de les envoyer dans le form
+    for (let i = 0; i < storedItems.length; i++) {
+      products.push(storedItems[i].id);
+    }
     // verifie si les values ont bien été retournées par les fonctions de verifications, les fonctions de verifications retourne une variable null si elle ne correspondent pas aux conditions. Nous verifions donc si elles ne sont PAS null.
     if (firstName && lastName && address && city && email) {
       // values de chaque input du form.
@@ -156,7 +162,6 @@ form.addEventListener("submit", async (e) => {
       // objet contenant l'objet contact et l'array products contenant les ids présent dans le localStorage
       const formData = {
         contact,
-        // products est initialisé dans cart.js dans la fonction productsIdWatch();
         products,
       };
 

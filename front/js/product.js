@@ -4,9 +4,6 @@ const price = document.getElementById("price");
 const description = document.getElementById("description");
 const colors = document.getElementById("colors");
 const quantity = document.getElementById("quantity");
-console.log(localStorage);
-var colorWatch = "";
-var arrayOfCart = [];
 
 // récupère la data de l'api à l'aide de l'id dans l'url
 const retrieveProductsData = () =>
@@ -26,21 +23,26 @@ const checkIdUrl = () => {
   const idParams = params.get("id");
   return idParams;
 };
-// crée une key à partir du titre de l'objet et de sa couleur
-const createNewItem = (inputQuantity, colorWatch) => {
+// crée un nouvel item à l'aide des arguments inputQuantity et inputColor déclaré dans addToStorage();
+const createNewItem = (inputQuantity, inputColor) => {
+  // on récupère le localStorage dans une variable
   let storedItems = JSON.parse(localStorage.getItem("Panier"));
+  // on créé un nouvel objet
   let newItem = {
     id: checkIdUrl(),
     quantity: inputQuantity,
-    color: colorWatch,
+    color: inputColor,
   };
+  // on vérifie si des objets sont stockés grace à storedItems
+  // si oui on push dans l'array existant
   if (storedItems) {
     storedItems.push(newItem);
   } else {
+    // si non on défini storedItems en type Array et on push newItem dedans
     storedItems = [];
     storedItems.push(newItem);
   }
-
+  // on ajoute au localStorage
   let stringifiedStoreditems = JSON.stringify(storedItems);
   localStorage.setItem("Panier", stringifiedStoreditems);
   alert("Objet ajouté avec succès !");
@@ -49,11 +51,12 @@ const createNewItem = (inputQuantity, colorWatch) => {
 // ajoute au localstorage un id, nombre d'articles et la couleur
 function addToStorage() {
   let storedItems = JSON.parse(localStorage.getItem("Panier"));
+  // récupère la quantité et la couleur voulu par le client
   let inputQuantity = quantity.value;
-  colorWatch = colors.value;
-  if (colorWatch === "") {
+  let inputColor = colors.value;
+  if (inputColor === "") {
     alert("Merci de choisir une couleur !");
-  } else if (inputQuantity == 0) {
+  } else if (inputQuantity === 0) {
     alert("Merci de choisir une quantité !");
   } else {
     // on récupère le panier dans le localStorage
@@ -62,7 +65,7 @@ function addToStorage() {
     if (storedItems) {
       for (const item of storedItems) {
         // verifie si l'objet que nous ajoutons existe deja dans le localstorage (meme couleur & id)
-        if (item.id.includes(checkIdUrl()) && item.color.includes(colorWatch)) {
+        if (item.id.includes(checkIdUrl()) && item.color.includes(inputColor)) {
           // on transforme inputQuantity et la quantité dans le localStorage en integer pour pouvoir les additionner
           let inputQuantityParsed = parseInt(inputQuantity);
           let quantityParsed = parseInt(item.quantity);
@@ -78,18 +81,18 @@ function addToStorage() {
             );
           }
           item.quantity = newInputQuantity;
+          // naprès MAJ quantity d'item dans storedItems on ajoute storedItems au localSotrage
           let stringifiedStoreditems = JSON.stringify(storedItems);
           localStorage.setItem("Panier", stringifiedStoreditems);
-          newInputQuantity = 0;
           return alert("Quantité modifiée avec succès !");
         }
       }
-
-      createNewItem(inputQuantity, colorWatch);
+      // on créé un nouvel item dans le cas ou la key Panier dans le localStorage est déja créée et qu'il s'agit bien d'un nouvel item
+      createNewItem(inputQuantity, inputColor);
     }
-    //si storedItems n'existe pas >> rien dans le localStorage
+    // on créé un nouvel item dans le cas ou la key Panier dans le localStorage n'existe pas
     else {
-      createNewItem(inputQuantity, colorWatch);
+      createNewItem(inputQuantity, inputColor);
     }
     // si aucune des conditions ne sont rencontrées nous ajoutons alors un nouvel item au localsotrage
   }
