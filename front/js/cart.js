@@ -171,21 +171,6 @@ const sumTotals = (apiProducts) => {
   });
 };
 
-// additionne le prix des items présent dans le panier
-/* const sumPrice = (apiProducts) => {
-  let total = 0;
-  apiProducts.forEach((apiProduct) => {
-    for (let i = 0; i < storedItems.length; i++) {
-      if (apiProduct._id === storedItems[i].id) {
-        let price = apiProduct.price;
-        let priceParsed = parseInt(price);
-        total += priceParsed * storedItems[i].quantity;
-      }
-    }
-    totalPrice.textContent = total;
-  });
-}; */
-
 // supprime l'item du localstorage et du DOM
 const deleteItemFn = () => {
   // array.from sert à acceder à forEach car getElementsByclassname est une HTMLcollection et non une nodelist
