@@ -12,9 +12,9 @@ const deleteItem = document.getElementsByClassName("deleteItem");
 // recupère les données présentent sur l'api
 const retrieveProductsPromise = () => {
   let storedIdUpdated = [];
-  // on reset promises pour chaque utilisation de retrieveProductsPromise()
+  // on déclare un tableau de promesses qui va stocker une promesse par item présent dans le localStorage
   let promises = [];
-
+  // cette boucle sert à supprimer les doublons d'id dans le localStorage
   for (let i = 0; i < storedItems.length; i++) {
     // doublons possiblent dans storedItems[i].id car differentes couleurs avec meme id possible
     // à chaque incrémentation nous verifions donc si l'id à été incrémenté précedemment, sinon on stock le nouvel id pour l'utiliser dans fetch en dessous
@@ -39,8 +39,10 @@ const retrieveProductsPromise = () => {
   // on retourne les promesses afin de les résoudre dans mainCart()
   return promises;
 };
+
 // permets de mettre à jour totaux et/ou DOM apres resolution des promesses
 const mainCart = () => {
+  // retourne le tableau de promesses promises
   const productsPromise = retrieveProductsPromise();
   // on résout les promesses retournées par retrieveProductsPromise() et les passe en arguments des fn
   Promise.all(productsPromise).then((products) => {

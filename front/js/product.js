@@ -9,7 +9,10 @@ const quantity = document.getElementById("quantity");
 const retrieveProductsData = () =>
   fetch("http://localhost:3000/api/products/" + checkIdUrl())
     .then((res) => res.json())
-    .then((data) => data)
+    .then((data) => {
+      fillItemImg(data);
+      fillItemContent(data);
+    })
     .catch((err) =>
       console.log(
         "Une erreur s'est produite sur la fonction retrieveProductsData ",
@@ -85,7 +88,7 @@ function addToStorage() {
         let stringifiedStoreditems = JSON.stringify(storedItems);
         localStorage.setItem("Panier", stringifiedStoreditems);
         return alert(
-          `Vous avez ajouté ${inputQuantityParsed} ${title.textContent} de couleur ${inputColor} à votre panier !`
+          `Quantité modifié ! Vous avez ajouté ${inputQuantityParsed} ${title.textContent} de couleur ${inputColor} à votre panier !`
         );
       }
     }
@@ -113,11 +116,4 @@ const fillItemContent = (product) => {
   });
 };
 
-// récupère la data en asynchrone
-const mainProduct = async () => {
-  const productData = await retrieveProductsData();
-  /* console.log(productData); */
-  fillItemImg(productData);
-  fillItemContent(productData);
-};
-mainProduct();
+retrieveProductsData();

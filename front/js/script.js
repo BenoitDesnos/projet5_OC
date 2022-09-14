@@ -4,6 +4,7 @@ const items = document.getElementById("items");
 const retrieveProductsData = () =>
   fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
+    .then((productsData) => fillProductsTable(productsData))
     .catch((err) =>
       console.log(
         "Une erreur s'est produite sur la fonction retrieveProductsData ",
@@ -13,8 +14,9 @@ const retrieveProductsData = () =>
 
 // utilise les données de l'api pour remplir la page des produits
 const fillProductsTable = (productsData) => {
+  console.log(productsData);
   //crée le contenu html pour chaque produit présent dans productsData
-  const productsBlock = productsData.map((product) => {
+  productsData.forEach((product) => {
     let a = document.createElement("a"); //
     let img = document.createElement("img");
     let h3 = document.createElement("h3");
@@ -32,18 +34,11 @@ const fillProductsTable = (productsData) => {
     // on y ajoute du contenu
     h3.textContent = product.name;
     p.textContent = product.description;
-    return a;
+    // ajoute chaque balise cliquable a chaque tour de foreach à items
+    items.append(a);
   });
-
-  // ajoute toutes les balises <a> que productsBlock retourne
-  items.append(...productsBlock);
 };
 
 // attends les données de l'api pour les fournir à fillProductsData
-const main = async () => {
-  const productsData = await retrieveProductsData();
-  /* console.log(productsData); */
-
-  fillProductsTable(productsData);
-};
-main();
+// fonction joué après l'initialisation des fonctions qu'elle utilise
+retrieveProductsData();
