@@ -88,7 +88,7 @@ function addToStorage() {
         let stringifiedStoreditems = JSON.stringify(storedItems);
         localStorage.setItem("Panier", stringifiedStoreditems);
         return alert(
-          `Quantité modifié ! Vous avez ajouté ${inputQuantityParsed} ${title.textContent} de couleur ${inputColor} à votre panier !`
+          `Quantité modifiée ! Vous avez ajouté ${inputQuantityParsed} ${title.textContent} de couleur ${inputColor} à votre panier !`
         );
       }
     }
